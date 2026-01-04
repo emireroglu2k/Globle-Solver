@@ -38,7 +38,14 @@ function App() {
             }
         };
 
-        w.postMessage({ type: 'INIT' });
+        const baseUrl = import.meta.env.BASE_URL;
+        const worldUrl = `${baseUrl}world.geojson`;
+        const distancesUrl = `${baseUrl}distances.json`;
+
+        w.postMessage({
+            type: 'INIT',
+            payload: { worldUrl, distancesUrl }
+        });
         setWorker(w);
 
         return () => w.terminate();

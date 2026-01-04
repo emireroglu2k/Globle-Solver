@@ -9,7 +9,8 @@ self.onmessage = async (e) => {
 
     if (type === 'INIT') {
         try {
-            await loadData();
+            const { worldUrl, distancesUrl } = payload;
+            await loadData(worldUrl, distancesUrl);
             self.postMessage({ type: 'READY', countries });
         } catch (err) {
             console.error(err);
@@ -26,11 +27,11 @@ self.onmessage = async (e) => {
     }
 };
 
-async function loadData() {
+async function loadData(worldUrl, distancesUrl) {
     try {
         const [geoResponse, distResponse] = await Promise.all([
-            fetch('/world.geojson'),
-            fetch('/distances.json').catch(e => ({ ok: false }))
+            fetch(worldUrl),
+            fetch(distancesUrl).catch(e => ({ ok: false }))
         ]);
 
         if (!geoResponse.ok) {
