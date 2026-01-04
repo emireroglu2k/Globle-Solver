@@ -294,7 +294,7 @@ const Sidebar = ({
                                     </button>
                                 )}
                             </div>
-                            <div className="space-y-2 h-[200px] overflow-y-auto pr-1">
+                            <div className="space-y-2 h-[200px] overflow-y-auto pr-1 bg-slate-50 border border-slate-200 rounded-xl p-2 shadow-inner">
                                 {clues.length === 0 ? (
                                     <div className="flex items-center justify-center h-full text-slate-400 text-xs italic">
                                         No clues added yet
@@ -335,9 +335,8 @@ const Sidebar = ({
 
                     </div>
 
-                    {/* CANDIDATES SECTION (Now inside the flow) */}
-                    <div className="bg-white border-t border-gray-200 flex-shrink-0 flex flex-col">
-                        <div className="px-5 py-2 flex items-center justify-between flex-shrink-0">
+                    <div className="flex-shrink-0 flex flex-col px-4 pb-4">
+                        <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Candidates</span>
                                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${candidates.length > 0 ? 'bg-[#95BF74]/20 text-[#6ea344]' : 'bg-gray-100 text-gray-400'}`}>
@@ -347,13 +346,13 @@ const Sidebar = ({
                             {isLoading && <Loader size={16} className="animate-spin text-[#B592A0]" />}
                         </div>
                         {/* Candidate List - Fixed Height */}
-                        <div className="overflow-y-auto h-[300px] border-t border-gray-50">
+                        <div className="overflow-y-auto h-[300px] bg-slate-50 border border-slate-200 rounded-xl p-2 shadow-inner">
                             {candidates.length === 0 ? (
                                 <div className="p-8 text-center">
                                     <p className="text-slate-400 text-sm">No matching countries found.</p>
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-gray-50">
+                                <ul className="space-y-1">
                                     {candidates.slice().sort((a, b) => getDisplayName(a).localeCompare(getDisplayName(b))).map((c, i) => {
                                         const name = getDisplayName(c);
                                         const isHovered = hoveredCountry && getDisplayName(hoveredCountry) === name;
@@ -366,10 +365,10 @@ const Sidebar = ({
                                                 onMouseLeave={() => onHoverCountry(null)}
                                                 onClick={() => onSelectCountry(c)}
                                                 className={`
-                                                    px-5 py-2.5 text-sm cursor-pointer transition-colors flex items-center justify-between
-                                                    ${isSelected ? 'bg-[#95BF74] text-white'
+                                                    px-3 py-2 text-sm cursor-pointer transition-all flex items-center justify-between rounded-lg
+                                                    ${isSelected ? 'bg-[#95BF74] text-white shadow-sm'
                                                         : isHovered ? 'bg-[#95BF74]/10 text-[#6ea344]'
-                                                            : 'text-slate-600 hover:bg-slate-50'}
+                                                            : 'text-slate-600 hover:bg-white hover:shadow-sm'}
                                                 `}
                                             >
                                                 <span className="font-medium truncate">{name}</span>
