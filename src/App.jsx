@@ -38,9 +38,18 @@ function App() {
             }
         };
 
-        const baseUrl = import.meta.env.BASE_URL;
-        const worldUrl = `${baseUrl}world.geojson`;
-        const distancesUrl = `${baseUrl}distances.json`;
+        // Use absolute URLs with explicit handling for trailing slashes
+        // This ensures proper resolution whether at /globle_solver/ or /globle_solver (no slash)
+        let appBase = window.location.href;
+        appBase = appBase.split('?')[0].split('#')[0]; // Clean search/hash
+        if (appBase.endsWith('index.html')) {
+            appBase = appBase.substring(0, appBase.lastIndexOf('/') + 1);
+        } else if (!appBase.endsWith('/')) {
+            appBase += '/';
+        }
+
+        const worldUrl = new URL('world.geojson', appBase).href;
+        const distancesUrl = new URL('distances.json', appBase).href;
 
         w.postMessage({
             type: 'INIT',
