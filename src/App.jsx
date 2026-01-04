@@ -13,9 +13,10 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [calculating, setCalculating] = useState(false); // New state for calculation loading
     const [hoveredCountry, setHoveredCountry] = useState(null);
+    const [tolerancePercentage, setTolerancePercentage] = useState(5);
+    const [worker, setWorker] = useState(null);
     const [includeTerritories, setIncludeTerritories] = useState(false);
     const [isAboutOpen, setIsAboutOpen] = useState(false);
-    const [worker, setWorker] = useState(null);
 
     // Initialize Worker
     useEffect(() => {
@@ -61,14 +62,15 @@ function App() {
     }, []);
 
     // Helper to trigger filter
-    const updateCandidates = (currentClues, currentIncludeTerritories) => {
+    const updateCandidates = (currentClues, currentIncludeTerritories, currentTolerancePct) => {
         if (!worker) return;
         setCalculating(true);
         worker.postMessage({
             type: 'FILTER',
             payload: {
                 clues: currentClues,
-                includeTerritories: currentIncludeTerritories
+                includeTerritories: currentIncludeTerritories,
+                tolerancePercentage: currentTolerancePct
             }
         });
     };
@@ -82,13 +84,13 @@ function App() {
         const newClues = [...clues, newClue];
         setClues(newClues);
         setSelectedCountry(null);
-        updateCandidates(newClues, includeTerritories);
+        updateCandidates(newClues, includeTerritories, tolerancePercentage);
     };
 
     const handleRemoveClue = (index) => {
         const newClues = clues.filter((_, i) => i !== index);
         setClues(newClues);
-        updateCandidates(newClues, includeTerritories);
+        updateCandidates(newClues, includeTerritories, tolerancePercentage);
     };
 
     const handleResetClues = () => {
@@ -101,7 +103,12 @@ function App() {
 
     const handleToggleTerritories = (val) => {
         setIncludeTerritories(val);
-        updateCandidates(clues, val);
+        updateCandidates(clues, val, tolerancePercentage);
+    };
+
+    const handleToleranceChange = (percent) => {
+        setTolerancePercentage(percent);
+        updateCandidates(clues, includeTerritories, percent);
     };
 
     if (loading) {
@@ -129,6 +136,8 @@ function App() {
                 onToggleTerritories={handleToggleTerritories}
                 onOpenAbout={() => setIsAboutOpen(true)}
                 isLoading={calculating}
+                tolerancePercentage={tolerancePercentage}
+                onToleranceChange={handleToleranceChange}
             />
 
             <div className="flex-1 relative">

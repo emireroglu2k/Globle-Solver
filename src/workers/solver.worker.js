@@ -17,13 +17,20 @@ self.onmessage = async (e) => {
             self.postMessage({ type: 'ERROR', error: err.message });
         }
     } else if (type === 'FILTER') {
-        if (!countries) {
-            self.postMessage({ type: 'ERROR', error: 'Data not loaded' });
-            return;
+        try {
+            if (!countries) {
+                self.postMessage({ type: 'ERROR', error: 'Data not loaded' });
+                return;
+            }
+            const { clues, includeTerritories, tolerancePercentage } = payload;
+            // console.log('Worker Filtering:', { cluesCount: clues.length, includeTerritories, tolerancePercentage });
+            const candidates = filterCandidates(countries.features, clues, includeTerritories, tolerancePercentage);
+            // console.log('Worker Result:', candidates.length);
+            self.postMessage({ type: 'RESULT', candidates });
+        } catch (err) {
+            console.error("Worker Filter Error:", err);
+            self.postMessage({ type: 'ERROR', error: err.message });
         }
-        const { clues, includeTerritories } = payload;
-        const candidates = filterCandidates(countries.features, clues, includeTerritories);
-        self.postMessage({ type: 'RESULT', candidates });
     }
 };
 
@@ -168,7 +175,7 @@ function calculateMinDistance(countryA, countryB, includeTerritories = false) {
     return minDistance;
 }
 
-function filterCandidates(allCountries, clues, includeTerritories = false) {
+function filterCandidates(allCountries, clues, includeTerritories = false, tolerancePercentage = 5) {
     return allCountries.filter(candidate => {
         return clues.every(clue => {
             const dist = calculateMinDistance(candidate, clue.country, includeTerritories);
@@ -177,7 +184,7 @@ function filterCandidates(allCountries, clues, includeTerritories = false) {
                 return dist === 0;
             }
 
-            const tolerance = Math.max(50, clue.distance * 0.05);
+            const tolerance = Math.max(50, clue.distance * (tolerancePercentage / 100));
             return Math.abs(dist - clue.distance) <= tolerance;
         });
     });
